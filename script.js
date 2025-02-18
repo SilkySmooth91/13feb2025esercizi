@@ -3,6 +3,7 @@ const filterInput = document.querySelector(".form-control")
 const addToCartBtns = document.querySelectorAll(".btn-success")
 
 let allBooks = []
+let cartBooks = []
 
 function fetchBooks() {
     return fetch(bookLink)
@@ -19,8 +20,13 @@ function fetchBooks() {
 function renderBooks(books) {
     const results = document.getElementById("results")
     results.innerHTML = ""
-
     books.forEach((book) => {
+        const newNode = createTemplate(book)
+        results.append(newNode)
+    })
+}
+
+function createTemplate(book) {
 
         // creazione delle card e dei loro sotto-elementi
         const card = document.createElement("div")
@@ -51,39 +57,15 @@ function renderBooks(books) {
 
         //event listener per l'evento aggiungi al carrello
         addToCart.addEventListener("click", () => {
-            const cartUl = document.getElementById("cartList")
-            const emptyMsg = document.getElementById("emptyCartMsg")
-            //se il carrello è vuoto, cancella il msg appena viene aggiunto un li
-            if (emptyMsg) {
-                emptyMsg.remove()
+            const cartBook = cartBooks.find((element) => element.asin === book.asin)
+            if (cartBook) {
+                cartBook.quantity++
+            } else { 
+                cartBooks.push({...book, quantity: 1})
+                addToCart.innerHTML = '<i class="bi bi-check2"></i> Added to cart!'
             }
 
-            //creazione dei li e loro sotto-elementi
-            const cartUlElem = document.createElement("li")
-            cartUlElem.classList.add("row", "align-items-center", "mb-2")
-            
-            const titleDiv = document.createElement("div")
-            titleDiv.classList.add("text-truncate", "col-6", "ms-1")
-            titleDiv.innerText = book.title
-
-            const priceDiv = document.createElement("div")
-            priceDiv.classList.add("col-3")
-            priceDiv.innerText = book.price + "" + "€"
-
-            const deleteBtn = document.createElement("button")
-            deleteBtn.classList.add("btn", "btn-danger", "col-2", "me-1")
-            deleteBtn.innerHTML = '<i class="bi bi-trash3"></i>'
-
-            //event listener per eliminare l'elemento dal carrello
-            deleteBtn.addEventListener("click", () => {
-            cartUlElem.remove()
-            })
-
-
-            cartUlElem.append(titleDiv, priceDiv, deleteBtn)
-            cartUl.append(cartUlElem)
-
-            addToCart.innerHTML = '<i class="bi bi-check2"></i> Added to cart!'
+            createCartList()
         })
 
         const hide = document.createElement("button")
@@ -92,11 +74,52 @@ function renderBooks(books) {
 
         cardBody.append(cardTitle, genre, price, addToCart, hide)
         card.append(img, cardBody)
-        results.append(card)
-
-    }
+        
+        return card
     
-)
+}
+
+function createCartList() {
+    const cartUl = document.getElementById("cartList")
+    cartUl.innerHTML= ""
+
+    const emptyMsg = document.getElementById("emptyCartMsg")
+    //se il carrello è vuoto, cancella il msg appena viene aggiunto un li
+    if (!emptyMsg.classList.contains("d-none") && (cartBooks.length > 0)) {
+        emptyMsg.classList.add("d-none")
+    } else if (cartBooks.length === 0 && emptyMsg.classList.contains("d-none")) {
+        emptyMsg.classList.remove("d-none")
+    }
+
+    //creazione dei li e loro sotto-elementi
+    cartBooks.forEach((book) => {
+        const cartUlElem = document.createElement("li")
+        cartUlElem.classList.add("row", "align-items-center", "mb-2")
+    
+        const titleDiv = document.createElement("div")
+        titleDiv.classList.add("text-truncate", "col-6", "ms-1")
+        titleDiv.innerText = book.title
+
+        const priceDiv = document.createElement("div")
+        priceDiv.classList.add("col-3")
+        priceDiv.innerText = book.price + "" + "€"
+
+        const deleteBtn = document.createElement("button")
+        deleteBtn.classList.add("btn", "btn-danger", "col-2", "me-1")
+        deleteBtn.innerHTML = '<i class="bi bi-trash3"></i>'
+
+        //event listener per eliminare l'elemento dal carrello
+        deleteBtn.addEventListener("click", () => {
+           cartBooks = cartBooks.filter((element) => element.asin !== book.asin)
+           createCartList()   
+        })
+
+
+        cartUlElem.append(titleDiv, priceDiv, deleteBtn)
+        cartUl.append(cartUlElem)
+    })
+    
+    
 }
 
 function filterBooks() {
