@@ -72,6 +72,12 @@ function createTemplate(book) {
         hide.classList.add("btn", "btn-secondary")
         hide.innerHTML = '<i class="bi bi-eye-slash"></i>'
 
+        hide.addEventListener("click", () => {
+            allBooks = allBooks.filter((element) => element.asin !== book.asin)
+            renderBooks(allBooks)
+        }
+        )
+
         cardBody.append(cardTitle, genre, price, addToCart, hide)
         card.append(img, cardBody)
         
@@ -118,18 +124,14 @@ function createCartList() {
         cartUlElem.append(titleDiv, priceDiv, deleteBtn)
         cartUl.append(cartUlElem)
     })
-    
-    
 }
 
 function filterBooks() {
     const filterValue = filterInput.value
 
     const filteredBooks = allBooks.filter((book) => {
-        if (
-            book.price === Number(filterValue) || 
-            book.title.toLowerCase().includes(filterValue.toLowerCase()) ||
-            book.category.toLowerCase().includes(filterValue.toLowerCase())
+        if ( 
+            book.title.toLowerCase().includes(filterValue.toLowerCase())   
         ) {
             return true
         }
