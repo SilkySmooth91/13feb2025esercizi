@@ -69,7 +69,7 @@ function createTemplate(book) {
         })
 
         const hide = document.createElement("button")
-        hide.classList.add("btn", "btn-secondary")
+        hide.classList.add("btn", "btn-secondary", "me-2")
         hide.innerHTML = '<i class="bi bi-eye-slash"></i>'
 
         hide.addEventListener("click", () => {
@@ -78,7 +78,12 @@ function createTemplate(book) {
         }
         )
 
-        cardBody.append(cardTitle, genre, price, addToCart, hide)
+        const details = document.createElement("a")
+        details.classList.add("btn", "btn-primary")
+        details.innerText = "Details"
+        details.setAttribute("href", "detail.html?q=" + book.asin)
+
+        cardBody.append(cardTitle, genre, price, addToCart, hide, details)
         card.append(img, cardBody)
         
         return card
