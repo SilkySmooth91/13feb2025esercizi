@@ -6,6 +6,7 @@ const bookLink = "https://striveschool-api.herokuapp.com/books/"
 
 const infoBox = document.getElementById("infobox")
 
+// Funzioni
 
 function getBook() {
 
